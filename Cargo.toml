@@ -1,0 +1,16 @@
+[package]
+name = "by"
+version = "1.0.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.100"
+clap = { version = "4.5.53", features = ["derive"] }
+colored = "3.1.1"
+git2 = "0.20.3"
+indicatif = "0.18.3"
+regex = "1.12.2"
+self_update = { version = "0.42.0", features = [
+    "compression-flate2",
+    "archive-tar",
+] }
