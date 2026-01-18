@@ -1,0 +1,68 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+    env:
+      artifact_name: by-${{ matrix.target }}
+    name: Build for ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+
+      - name: Build for ${{ matrix.os }}
+        run: cargo build --release --target ${{ matrix.target }}
+
+      - name: Archive Binary
+        shell: bash
+        run: |
+          if [[ "${{ matrix.target }}" == *"windows"* ]]; then
+            EXT=".exe"
+          else
+            EXT=""
+          fi
+
+          tar -czvf ${{ env.artifact_name }}.tar.gz -C target/${{ matrix.target }}/release by${EXT}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.os }}
+          path: ${{ env.artifact_name }}.tar.gz
+
+  create-release:
+      needs: build
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+      steps:
+        - uses: actions/download-artifact@v4
+        - name: Create GitHub Release
+          uses: softprops/action-gh-release@v2
+          with:
+            files: |
+              ubuntu-latest/by-x86_64-unknown-linux-gnu.tar.gz
+              macos-latest/by-aarch64-apple-darwin.tar.gz
+              windows-latest/by-x86_64-pc-windows-msvc.tar.gz
+              windows-11-arm/by-aarch64-pc-windows-msvc.tar.gz
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
