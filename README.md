@@ -4,7 +4,7 @@
 
 Built to simplify my own workflow while also helping AI agents manage multiple worktrees without friction. I couldn’t find a tool that fit my needs and worked well on Windows and Mac, so I built one.
 
-By default, worktrees are created inside the repository in the `.worktree` folder, and this path is automatically added to your `.gitignore` file. You can customize the base path using the `config` command.
+By default, worktrees are created inside the repository in the `.worktree` folder. This path is automatically excluded via Git’s exclude mechanism (https://git-scm.com/docs/gitignore) so it is not tracked. You can customize the base path using the `config` command.
 
 ## Installation
 

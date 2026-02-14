@@ -2,8 +2,8 @@ use anyhow::{Context, Error};
 use clap::Parser;
 use colored::Colorize;
 use git2::Repository;
+use self_update::cargo_crate_version;
 use std::process::ExitCode;
-use self_update::{cargo_crate_version};
 
 use crate::cli::{Cli, Commands, ConfigAction};
 use crate::config::{get_all_configs, set_config, unset_config};
